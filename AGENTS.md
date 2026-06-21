@@ -134,5 +134,6 @@ Applies to `01_pairUSDT/` and `02_backend/`.
 
 ## Response Format Rules
 
+- 답변 첫 줄에 반드시 `[규정 검토 완료: O]` 형태의 확인 문구를 명시할 것. (작업 전 AGENTS.md 및 workflow_rules.md 필수 확인)
 - 답변은 항상 300자 이하로 간결하게 작성할 것.
 - 핵심 내용 및 메인 설명은 표, 그래프, 그림 등 시각적 요소를 적극 활용하여 전달할 것.
