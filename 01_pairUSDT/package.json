@@ -1,0 +1,13 @@
+{
+  "name": "pairusdt-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build:ts": "tsc -p tsconfig.frontend.json --rootDir templates --outDir templates/dist",
+    "check:ts": "tsc -p tsconfig.frontend.json --noEmit"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.2",
+    "typescript": "^5.9.3"
+  }
+}
