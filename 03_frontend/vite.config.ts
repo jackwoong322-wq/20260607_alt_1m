@@ -5,7 +5,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': 'http://localhost:8000',
+      '/api': {
+        target: 'https://two0260317-alt.onrender.com',
+        changeOrigin: true,
+      },
     },
   },
   optimizeDeps: {
