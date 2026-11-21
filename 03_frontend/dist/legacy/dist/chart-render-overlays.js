@@ -51,13 +51,20 @@ function elapsedDays(fromDay, toDay) {
     }
     return Math.max(0, Math.round(to - from));
 }
-function formatBoxLabel(prefix, boxNo, rate, usdValue, changePct, days, suffix = '') {
+function formatCompactBoxLabel(prefix, boxNo, rate, suffix = '') {
+    const rateText = Number.isFinite(rate) ? `${rate.toFixed(1)}%` : '';
+    return `${prefix}${boxNo} ${rateText}${suffix}`.trim();
+}
+function formatFullBoxLabel(prefix, boxNo, rate, usdValue, changePct, days, suffix = '') {
     const usdText = formatUsdCompact(usdValue);
     const changeText = formatSignedPct(changePct);
     const dayText = days == null ? '' : `${days}d`;
     const rateText = `${rate.toFixed(1)}%${usdText ? `(${usdText})` : ''}`;
-    const moveText = changeText ? `${changeText}${dayText ? `(${dayText})` : ''}` : '';
-    return [prefix + boxNo, rateText, moveText].filter(Boolean).join(' ') + suffix;
+    const moveText = changeText ? ` ${changeText}${dayText ? `(${dayText})` : ''}` : '';
+    return `${prefix}${boxNo} ${rateText}${moveText}${suffix}`.trim();
+}
+function formatBoxLabel(prefix, boxNo, rate, usdValue, changePct, days, suffix = '') {
+    return formatFullBoxLabel(prefix, boxNo, rate, usdValue, changePct, days, suffix);
 }
 /** [Why] 확대 시 timeToCoordinate가 화면 밖 시간에 null 반환 → 가장자리로 클램프해 주석 유지 */
 function clampCoordToVisible(timeScale, day, overlayWidth) {
@@ -484,7 +491,10 @@ export function renderBoxMarks(zones, cycleLowIdx, cycleData, timeScale, series,
             // [Fix] boxIndex(DB 순번)를 우선 사용, 없으면 zi+1 폴백
             const hiBoxNo = z.boxIndex != null ? Number(z.boxIndex) + 1 : zi + 1;
             const hiText = formatBoxLabel('H', hiBoxNo, hiVal, hiUsd, hiVsPrevLo, hiElapsedDays, isPrediction ? scenTag : '');
+            const hiTitle = formatFullBoxLabel('H', hiBoxNo, hiVal, hiUsd, hiVsPrevLo, hiElapsedDays, isPrediction ? scenTag : '');
             lblHi.textContent = hiText;
+            lblHi.title = hiTitle;
+            dotHi.title = hiTitle;
             const startPxHi = timeScale.timeToCoordinate(dayToTime(z.startX));
             const endPxHi = timeScale.timeToCoordinate(dayToTime(z.endX));
             let xLabelHi;
@@ -532,8 +542,11 @@ export function renderBoxMarks(zones, cycleLowIdx, cycleData, timeScale, series,
             lblLo.style.color = loLblColor;
             // [Fix] boxIndex(DB 순번)를 우선 사용, 없으면 zi+1 폴백
             const loBoxNo = z.boxIndex != null ? Number(z.boxIndex) + 1 : zi + 1;
-            const loText = formatBoxLabel('L', loBoxNo, loVal, loUsd, loVsPrevHi, loElapsedDays);
+            const loText = formatBoxLabel('L', loBoxNo, loVal, loUsd, loVsPrevHi, loElapsedDays, isPrediction ? scenTag : '');
+            const loTitle = formatFullBoxLabel('L', loBoxNo, loVal, loUsd, loVsPrevHi, loElapsedDays, isPrediction ? scenTag : '');
             lblLo.textContent = loText;
+            lblLo.title = loTitle;
+            dotLo.title = loTitle;
             const startPxLo = timeScale.timeToCoordinate(dayToTime(z.startX));
             const endPxLo = timeScale.timeToCoordinate(dayToTime(z.endX));
             let xLabelLo;

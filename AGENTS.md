@@ -128,6 +128,7 @@ Applies to `01_pairUSDT/` and `02_backend/`.
 - AGENTS.md is the single source of truth. Keep tool-specific files lightweight.
 - Claude Code workflow rules are in `CLAUDE.md`.
 - Test rules are in `test_rules.md`.
+- Design rules & specs are in `design_rules.md` and `DESIGN.md`.
 - Workflow rules are in `workflow_rules.md`.
 
 ---

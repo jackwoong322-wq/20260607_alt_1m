@@ -170,48 +170,24 @@ export function buildCycleToggles() {
     });
 }
 window.buildCycleToggles = buildCycleToggles;
-function updateDropdownToggleText() {
-    const btn = document.getElementById('showDropdownBtn');
-    if (!btn) return;
-    const activeCount = [
-        chartState.showHighLow,
-        chartState.showBoxZone,
-        chartState.showPrediction,
-        chartState.showExtendedForecast,
-        chartState.showSubBox,
-        chartState.showBB
-    ].filter(Boolean).length;
-    btn.textContent = `OPTIONS ▾ (${activeCount})`;
-}
-
-function toggleShowDropdown() {
-    const menu = document.getElementById('showDropdownMenu');
-    if (menu) {
-        menu.classList.toggle('show');
-    }
-}
-window.toggleShowDropdown = toggleShowDropdown;
-
-document.addEventListener('click', (e) => {
-    const container = document.getElementById('showDropdownContainer');
-    const menu = document.getElementById('showDropdownMenu');
-    if (container && menu && !container.contains(e.target)) {
-        menu.classList.remove('show');
-    }
-});
-
 function toggleHighLow() {
     chartState.showHighLow = !chartState.showHighLow;
-    const chk = document.getElementById('chkRange');
-    if (chk) chk.checked = chartState.showHighLow;
-    updateDropdownToggleText();
+    const btn = document.getElementById('toggleRange');
+    if (btn) {
+        btn.style.cssText = chartState.showHighLow
+            ? 'border-color:#00d4ff;color:#00d4ff;background:rgba(0,212,255,0.1)'
+            : 'border-color:#4a6080;color:#4a6080;';
+    }
     drawChart();
 }
 function toggleBoxZone() {
     chartState.showBoxZone = !chartState.showBoxZone;
-    const chk = document.getElementById('chkBox');
-    if (chk) chk.checked = chartState.showBoxZone;
-    updateDropdownToggleText();
+    const btn = document.getElementById('toggleBox');
+    if (btn) {
+        btn.style.cssText = chartState.showBoxZone
+            ? 'border-color:#FFB800;color:#FFB800;background:rgba(255,184,0,0.1)'
+            : 'border-color:#4a6080;color:#4a6080;';
+    }
     drawChart();
 }
 function toggleBearBull() {
@@ -219,41 +195,52 @@ function toggleBearBull() {
     if (!chartState.showPrediction) {
         chartState.showExtendedForecast = false;
     }
-    const chk = document.getElementById('chkBearBull');
-    if (chk) chk.checked = chartState.showPrediction;
+    const btn = document.getElementById('toggleBearBull');
+    if (btn) {
+        btn.style.cssText = chartState.showPrediction
+            ? 'border-color:#ff6bb5;color:#ff6bb5;background:rgba(255,107,181,0.1)'
+            : 'border-color:#4a6080;color:#4a6080;';
+    }
     updateExtendedForecastButton();
-    updateDropdownToggleText();
     drawChart();
 }
 function updateExtendedForecastButton() {
-    const chk = document.getElementById('chkExtendedForecast');
-    if (!chk) return;
-    chk.disabled = !chartState.showPrediction;
-    if (!chartState.showPrediction) {
-        chk.checked = false;
-    } else {
-        chk.checked = chartState.showExtendedForecast;
-    }
-    updateDropdownToggleText();
+    const btn = document.getElementById('toggleExtendedForecast');
+    if (!btn)
+        return;
+    btn.disabled = !chartState.showPrediction;
+    btn.style.cssText =
+        chartState.showPrediction && chartState.showExtendedForecast
+            ? 'border-color:#a78bfa;color:#d8ccff;background:rgba(167,139,250,0.12)'
+            : chartState.showPrediction
+                ? 'border-color:#4a6080;color:#4a6080;'
+                : 'border-color:#26364f;color:#344966;opacity:0.55;';
 }
 function toggleExtendedForecast() {
-    if (!chartState.showPrediction) return;
+    if (!chartState.showPrediction)
+        return;
     chartState.showExtendedForecast = !chartState.showExtendedForecast;
     updateExtendedForecastButton();
     drawChart();
 }
 function toggleSubBox() {
     chartState.showSubBox = !chartState.showSubBox;
-    const chk = document.getElementById('chkSubBox');
-    if (chk) chk.checked = chartState.showSubBox;
-    updateDropdownToggleText();
+    const btn = document.getElementById('toggleSubBox');
+    if (btn) {
+        btn.style.cssText = chartState.showSubBox
+            ? 'border-color:#00d4ff;color:#00d4ff;background:rgba(0,212,255,0.10)'
+            : 'border-color:#4a6080;color:#4a6080;';
+    }
     drawChart();
 }
 function toggleBB() {
     chartState.showBB = !chartState.showBB;
-    const chk = document.getElementById('chkBB');
-    if (chk) chk.checked = chartState.showBB;
-    updateDropdownToggleText();
+    const btn = document.getElementById('toggleBB');
+    if (btn) {
+        btn.style.cssText = chartState.showBB
+            ? 'border-color:#a78bfa;color:#d8ccff;background:rgba(167,139,250,0.12)'
+            : 'border-color:#4a6080;color:#4a6080;';
+    }
     drawChart();
 }
 // ── Defaults & Bottom Override UI ─────────────────────
@@ -278,24 +265,32 @@ export function initDefaults() {
             chartState.activeCycles = new Set([maxCycle]);
         }
     }
-    // 동기화
-    const chkRange = document.getElementById('chkRange');
-    if (chkRange) chkRange.checked = chartState.showHighLow;
-
-    const chkBox = document.getElementById('chkBox');
-    if (chkBox) chkBox.checked = chartState.showBoxZone;
-
-    const chkBearBull = document.getElementById('chkBearBull');
-    if (chkBearBull) chkBearBull.checked = chartState.showPrediction;
-
-    const chkSubBox = document.getElementById('chkSubBox');
-    if (chkSubBox) chkSubBox.checked = chartState.showSubBox;
-
-    const chkBB = document.getElementById('chkBB');
-    if (chkBB) chkBB.checked = chartState.showBB;
-
+    // BOX ZONE 기본 활성화 버튼 스타일 동기화
+    const boxBtn = document.getElementById('toggleBox');
+    if (boxBtn) {
+        boxBtn.style.cssText = chartState.showBoxZone
+            ? 'border-color:#FFB800;color:#FFB800;background:rgba(255,184,0,0.1)'
+            : 'border-color:#4a6080;color:#4a6080;';
+    }
+    const predictionBtn = document.getElementById('toggleBearBull');
+    if (predictionBtn) {
+        predictionBtn.style.cssText = chartState.showPrediction
+            ? 'border-color:#ff6bb5;color:#ff6bb5;background:rgba(255,107,181,0.1)'
+            : 'border-color:#4a6080;color:#4a6080;';
+    }
     updateExtendedForecastButton();
-    updateDropdownToggleText();
+    const subBoxBtn = document.getElementById('toggleSubBox');
+    if (subBoxBtn) {
+        subBoxBtn.style.cssText = chartState.showSubBox
+            ? 'border-color:#00d4ff;color:#00d4ff;background:rgba(0,212,255,0.10)'
+            : 'border-color:#4a6080;color:#4a6080;';
+    }
+    const bbBtn = document.getElementById('toggleBB');
+    if (bbBtn) {
+        bbBtn.style.cssText = chartState.showBB
+            ? 'border-color:#a78bfa;color:#d8ccff;background:rgba(167,139,250,0.12)'
+            : 'border-color:#4a6080;color:#4a6080;';
+    }
 }
 // ── Wire DOM events & expose toggles for onclick ───────
 const searchInput = document.getElementById('searchInput');

@@ -1,7 +1,17 @@
-import { supabase } from './supabaseClient';
+import { supabase, isSupabaseConfigured } from './supabaseClient';
 
 const SUB_BOX_LAYER = "sub_box";
 const SUB_BOX_SCOPE = "active_internal";
+
+let sampleDataCache: any = null;
+
+async function getSampleData() {
+    if (sampleDataCache) return sampleDataCache;
+    const res = await fetch('/legacy/sample-dashboard-data.json');
+    if (!res.ok) throw new Error('Failed to load sample dashboard data');
+    sampleDataCache = await res.json();
+    return sampleDataCache;
+}
 
 function subBoxLabel(index: number): string {
     let label = "";
@@ -246,12 +256,67 @@ let manifestCache: any = null;
 let defaultCoinId: string | null = null;
 let defaultCycleNumber: number | null = null;
 
+const BASE_URL = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
+
 export async function fetchDashboardManifest() {
     if (manifestCache) {
         return {
             data_version: "frontend-v1",
             generated_at: new Date().toISOString(),
             cache_status: "hit",
+            ...manifestCache
+        };
+    }
+
+    try {
+        const res = await fetch(`${BASE_URL}/api/dashboard-manifest`);
+        if (res.ok) {
+            const data = await res.json();
+            manifestCache = {
+                default_coin_id: data.default_coin_id,
+                default_cycle_number: data.default_cycle_number,
+                coins: data.coins
+            };
+            defaultCoinId = data.default_coin_id;
+            defaultCycleNumber = data.default_cycle_number;
+            return data;
+        }
+    } catch (e) {
+        console.warn('Backend manifest API unreachable, falling back:', e);
+    }
+
+    if (!isSupabaseConfigured) {
+        const sampleData = await getSampleData();
+        const coins = Object.keys(sampleData).map((coinKey, idx) => {
+            const coinObj = sampleData[coinKey];
+            return {
+                coin_id: coinKey,
+                symbol: (coinObj.symbol || coinKey).toUpperCase(),
+                name: coinObj.name || coinKey,
+                rank: coinObj.rank || (idx + 1),
+                cycles: (coinObj.cycles || []).map((c: any) => ({
+                    cycle_number: c.cycle_number,
+                    cycle_name: c.cycle_name,
+                    peak_date: c.peak_date,
+                    peak_price: c.peak_price,
+                    has_data: true,
+                    can_lazy_load: true,
+                    is_current: c.cycle_number === 4,
+                    is_initially_loaded: true,
+                }))
+            };
+        });
+        defaultCoinId = "bitcoin";
+        defaultCycleNumber = 4;
+        manifestCache = {
+            default_coin_id: defaultCoinId,
+            default_cycle_number: defaultCycleNumber,
+            coins
+        };
+        return {
+            data_version: "sample-v1",
+            generated_at: new Date().toISOString(),
+            cache_status: "sample",
             ...manifestCache
         };
     }
@@ -328,8 +393,28 @@ export async function fetchDashboardManifest() {
 }
 
 export async function fetchDashboardInitialData() {
+    try {
+        const res = await fetch(`${BASE_URL}/api/dashboard-initial-data`);
+        if (res.ok) {
+            const data = await res.json();
+            return data;
+        }
+    } catch (e) {
+        console.warn('Backend initial data API unreachable, falling back:', e);
+    }
+
     if (!manifestCache) {
         await fetchDashboardManifest();
+    }
+
+    if (!isSupabaseConfigured) {
+        const sampleData = await getSampleData();
+        return {
+            data_version: "sample-v1",
+            generated_at: new Date().toISOString(),
+            cache_status: "sample",
+            data: sampleData
+        };
     }
 
     const initialData: Record<string, any> = {};
@@ -358,6 +443,31 @@ export async function fetchDashboardInitialData() {
 }
 
 export async function fetchCycleData(coinId: string, cycleNumber: number) {
+    try {
+        const res = await fetch(
+            `${BASE_URL}/api/dashboard-cycle-data?coin_id=${encodeURIComponent(coinId)}&cycle_number=${cycleNumber}`,
+        );
+        if (res.ok) {
+            const data = await res.json();
+            return data;
+        }
+    } catch (e) {
+        console.warn('Backend cycle data API unreachable, falling back:', e);
+    }
+
+    if (!isSupabaseConfigured) {
+        const sampleData = await getSampleData();
+        const coin = sampleData[coinId] || Object.values(sampleData).find((c: any) => (c.symbol || '').toLowerCase() === coinId.toLowerCase());
+        const cycle = coin?.cycles?.find((c: any) => c.cycle_number === cycleNumber);
+        return {
+            data_version: "sample-v1",
+            generated_at: new Date().toISOString(),
+            cache_status: "sample",
+            coin_id: coinId,
+            cycle: cycle || null
+        };
+    }
+
     const [cycleRows, boxRows, pathRows, peakRows] = await Promise.all([
         supabase.from('alt_cycle_data').select('*').eq('coin_id', coinId).eq('cycle_number', cycleNumber).order('days_since_peak'),
         supabase.from('coin_analysis_results').select('*').eq('coin_id', coinId).eq('cycle_number', cycleNumber).order('box_index'),

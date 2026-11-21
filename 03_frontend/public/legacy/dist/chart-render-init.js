@@ -28,7 +28,6 @@ export function initChart() {
         layout: {
             background: { color: '#080c14' },
             textColor: '#c8d8f0',
-            fontSize: 18,
         },
         grid: {
             vertLines: { color: '#1e2d45' },

@@ -67,7 +67,17 @@ function elapsedDays(fromDay: number | null | undefined, toDay: number | null | 
   return Math.max(0, Math.round(to - from));
 }
 
-function formatBoxLabel(
+function formatCompactBoxLabel(
+  prefix: 'H' | 'L',
+  boxNo: number,
+  rate: number,
+  suffix = '',
+): string {
+  const rateText = Number.isFinite(rate) ? `${rate.toFixed(1)}%` : '';
+  return `${prefix}${boxNo} ${rateText}${suffix}`.trim();
+}
+
+function formatFullBoxLabel(
   prefix: 'H' | 'L',
   boxNo: number,
   rate: number,
@@ -80,8 +90,28 @@ function formatBoxLabel(
   const changeText = formatSignedPct(changePct);
   const dayText = days == null ? '' : `${days}d`;
   const rateText = `${rate.toFixed(1)}%${usdText ? `(${usdText})` : ''}`;
-  const moveText = changeText ? `${changeText}${dayText ? `(${dayText})` : ''}` : '';
-  return [prefix + boxNo, rateText, moveText].filter(Boolean).join(' ') + suffix;
+  const moveText = changeText ? ` ${changeText}${dayText ? `(${dayText})` : ''}` : '';
+  return `${prefix}${boxNo} ${rateText}${moveText}${suffix}`.trim();
+}
+
+function formatBoxLabel(
+  prefix: 'H' | 'L',
+  boxNo: number,
+  rate: number,
+  usdValue: number | null,
+  changePct: string | number | null,
+  days: number | null,
+  suffix = '',
+): string {
+  return formatFullBoxLabel(
+    prefix,
+    boxNo,
+    rate,
+    usdValue,
+    changePct,
+    days,
+    suffix,
+  );
 }
 
 /** [Why] 확대 시 timeToCoordinate가 화면 밖 시간에 null 반환 → 가장자리로 클램프해 주석 유지 */
@@ -573,7 +603,18 @@ export function renderBoxMarks(
         hiElapsedDays,
         isPrediction ? scenTag : '',
       );
+      const hiTitle = formatFullBoxLabel(
+        'H',
+        hiBoxNo,
+        hiVal,
+        hiUsd,
+        hiVsPrevLo,
+        hiElapsedDays,
+        isPrediction ? scenTag : '',
+      );
       lblHi.textContent = hiText;
+      lblHi.title = hiTitle;
+      dotHi.title = hiTitle;
 
       const startPxHi = timeScale.timeToCoordinate(dayToTime(z.startX));
       const endPxHi = timeScale.timeToCoordinate(dayToTime(z.endX));
@@ -627,8 +668,20 @@ export function renderBoxMarks(
         loUsd,
         loVsPrevHi,
         loElapsedDays,
+        isPrediction ? scenTag : '',
+      );
+      const loTitle = formatFullBoxLabel(
+        'L',
+        loBoxNo,
+        loVal,
+        loUsd,
+        loVsPrevHi,
+        loElapsedDays,
+        isPrediction ? scenTag : '',
       );
       lblLo.textContent = loText;
+      lblLo.title = loTitle;
+      dotLo.title = loTitle;
 
       const startPxLo = timeScale.timeToCoordinate(dayToTime(z.startX));
       const endPxLo = timeScale.timeToCoordinate(dayToTime(z.endX));

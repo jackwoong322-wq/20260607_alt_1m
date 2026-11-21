@@ -95,26 +95,16 @@ export function getCycleStatus(coinId, cycleNumber) {
     return 'unloaded';
 }
 async function reloadInitialSnapshot() {
-    let manifest, initial;
-    
-    if (typeof window.parent.__fetchDashboardManifest_frontend === 'function' && typeof window.parent.__fetchDashboardInitialData_frontend === 'function') {
-        [manifest, initial] = await Promise.all([
-            window.parent.__fetchDashboardManifest_frontend(),
-            window.parent.__fetchDashboardInitialData_frontend()
-        ]);
-    } else {
-        const baseUrl = getApiBaseUrl();
-        const [manifestRes, initialRes] = await Promise.all([
-            fetch(`${baseUrl}/api/dashboard-manifest`),
-            fetch(`${baseUrl}/api/dashboard-initial-data`),
-        ]);
-        if (!manifestRes.ok || !initialRes.ok) {
-            throw new Error('Failed to reload dashboard snapshot');
-        }
-        manifest = await manifestRes.json();
-        initial = await initialRes.json();
+    const baseUrl = getApiBaseUrl();
+    const [manifestRes, initialRes] = await Promise.all([
+        fetch(`${baseUrl}/api/dashboard-manifest`),
+        fetch(`${baseUrl}/api/dashboard-initial-data`),
+    ]);
+    if (!manifestRes.ok || !initialRes.ok) {
+        throw new Error('Failed to reload dashboard snapshot');
     }
-    
+    const manifest = await manifestRes.json();
+    const initial = await initialRes.json();
     window.__DASHBOARD_MANIFEST__ = manifest;
     window.__DASHBOARD_META__ = {
         data_version: initial.data_version,
@@ -173,26 +163,17 @@ export async function ensureCycleLoaded(coinId, cycleNumber, allowSnapshotReload
     const promise = (async () => {
         let shouldRefreshView = false;
         try {
-            const currentVersion = getMeta()?.data_version;
-            
-            // Bypass API and use the local frontend fetcher injected by LegacyAnalyzerApp
-            let payload;
-            if (typeof window.parent.__fetchCycleData_frontend === 'function') {
-                payload = await window.parent.__fetchCycleData_frontend(coinId, Number(cycleNumber));
-            } else {
-                // Fallback for legacy (just in case)
-                const baseUrl = getApiBaseUrl();
-                const params = new URLSearchParams({
-                    coin_id: coinId,
-                    cycle_number: String(cycleNumber),
-                });
-                const response = await fetch(`${baseUrl}/api/dashboard-cycle-data?${params}`);
-                if (!response.ok) {
-                    throw new Error(`${response.status} ${response.statusText}`);
-                }
-                payload = await response.json();
+            const baseUrl = getApiBaseUrl();
+            const params = new URLSearchParams({
+                coin_id: coinId,
+                cycle_number: String(cycleNumber),
+            });
+            const response = await fetch(`${baseUrl}/api/dashboard-cycle-data?${params}`);
+            if (!response.ok) {
+                throw new Error(`${response.status} ${response.statusText}`);
             }
-
+            const payload = await response.json();
+            const currentVersion = getMeta()?.data_version;
             if (currentVersion && payload.data_version !== currentVersion) {
                 await reloadInitialSnapshot();
                 if (allowSnapshotReload) {

@@ -51,13 +51,20 @@ function elapsedDays(fromDay, toDay) {
     }
     return Math.max(0, Math.round(to - from));
 }
-function formatBoxLabel(prefix, boxNo, rate, usdValue, changePct, days, suffix = '') {
+function formatCompactBoxLabel(prefix, boxNo, rate, suffix = '') {
+    const rateText = Number.isFinite(rate) ? `${rate.toFixed(1)}%` : '';
+    return `${prefix}${boxNo} ${rateText}${suffix}`.trim();
+}
+function formatFullBoxLabel(prefix, boxNo, rate, usdValue, changePct, days, suffix = '') {
     const usdText = formatUsdCompact(usdValue);
     const changeText = formatSignedPct(changePct);
     const dayText = days == null ? '' : `${days}d`;
     const rateText = `${rate.toFixed(1)}%${usdText ? `(${usdText})` : ''}`;
-    const moveText = changeText ? `${changeText}${dayText ? `(${dayText})` : ''}` : '';
-    return [prefix + boxNo, rateText, moveText].filter(Boolean).join(' ') + suffix;
+    const moveText = changeText ? ` ${changeText}${dayText ? `(${dayText})` : ''}` : '';
+    return `${prefix}${boxNo} ${rateText}${moveText}${suffix}`.trim();
+}
+function formatBoxLabel(prefix, boxNo, rate, usdValue, changePct, days, suffix = '') {
+    return formatFullBoxLabel(prefix, boxNo, rate, usdValue, changePct, days, suffix);
 }
 /** [Why] 확대 시 timeToCoordinate가 화면 밖 시간에 null 반환 → 가장자리로 클램프해 주석 유지 */
 function clampCoordToVisible(timeScale, day, overlayWidth) {
@@ -117,9 +124,8 @@ export function renderSubBoxMarks(subBoxes, candidates, timeScale, series, coinI
         const startX = safeSubBoxNumber(box.startX);
         const endX = safeSubBoxNumber(box.endX);
         const upper = safeSubBoxNumber(box.upper);
-        if (startX == null || endX == null || upper == null) {
+        if (startX == null || endX == null || upper == null)
             return;
-        }
         let x1 = timeScale.timeToCoordinate(dayToTime(startX));
         let x2 = timeScale.timeToCoordinate(dayToTime(endX));
         const y = series.priceToCoordinate(upper);
@@ -127,9 +133,8 @@ export function renderSubBoxMarks(subBoxes, candidates, timeScale, series, coinI
             x1 = clampCoordToVisible(timeScale, startX, overlayWidth);
         if (x2 === null)
             x2 = clampCoordToVisible(timeScale, endX, overlayWidth);
-        if (x1 === null || x2 === null || y === null) {
+        if (x1 === null || x2 === null || y === null)
             return;
-        }
         const left = Math.max(0, Math.min(x1, x2));
         const right = Math.min(overlayWidth, Math.max(x1, x2));
         const width = Math.max(12, right - left);
@@ -486,7 +491,10 @@ export function renderBoxMarks(zones, cycleLowIdx, cycleData, timeScale, series,
             // [Fix] boxIndex(DB 순번)를 우선 사용, 없으면 zi+1 폴백
             const hiBoxNo = z.boxIndex != null ? Number(z.boxIndex) + 1 : zi + 1;
             const hiText = formatBoxLabel('H', hiBoxNo, hiVal, hiUsd, hiVsPrevLo, hiElapsedDays, isPrediction ? scenTag : '');
+            const hiTitle = formatFullBoxLabel('H', hiBoxNo, hiVal, hiUsd, hiVsPrevLo, hiElapsedDays, isPrediction ? scenTag : '');
             lblHi.textContent = hiText;
+            lblHi.title = hiTitle;
+            dotHi.title = hiTitle;
             const startPxHi = timeScale.timeToCoordinate(dayToTime(z.startX));
             const endPxHi = timeScale.timeToCoordinate(dayToTime(z.endX));
             let xLabelHi;
@@ -506,7 +514,7 @@ export function renderBoxMarks(zones, cycleLowIdx, cycleData, timeScale, series,
             xLabelHi = Math.max(pad, Math.min(overlayWidth - pad, xLabelHi));
             lblHi.style.left = xLabelHi + 'px';
             lblHi.style.transform = 'translateX(-50%)';
-            const rawTopHi = rawYHi - 28;
+            const rawTopHi = rawYHi - 18;
             const visibleHi = rawTopHi >= 0 && rawTopHi <= chartHeight;
             lblHi.style.display = visibleHi ? 'block' : 'none';
             if (visibleHi) {
@@ -535,7 +543,10 @@ export function renderBoxMarks(zones, cycleLowIdx, cycleData, timeScale, series,
             // [Fix] boxIndex(DB 순번)를 우선 사용, 없으면 zi+1 폴백
             const loBoxNo = z.boxIndex != null ? Number(z.boxIndex) + 1 : zi + 1;
             const loText = formatBoxLabel('L', loBoxNo, loVal, loUsd, loVsPrevHi, loElapsedDays, isPrediction ? scenTag : '');
+            const loTitle = formatFullBoxLabel('L', loBoxNo, loVal, loUsd, loVsPrevHi, loElapsedDays, isPrediction ? scenTag : '');
             lblLo.textContent = loText;
+            lblLo.title = loTitle;
+            dotLo.title = loTitle;
             const startPxLo = timeScale.timeToCoordinate(dayToTime(z.startX));
             const endPxLo = timeScale.timeToCoordinate(dayToTime(z.endX));
             let xLabelLo;
@@ -554,7 +565,7 @@ export function renderBoxMarks(zones, cycleLowIdx, cycleData, timeScale, series,
             xLabelLo = Math.max(pad, Math.min(overlayWidth - pad, xLabelLo));
             lblLo.style.left = xLabelLo + 'px';
             lblLo.style.transform = 'translateX(-50%)';
-            const rawTopLo = rawYLo + 12;
+            const rawTopLo = rawYLo + 6;
             const visibleLo = rawTopLo >= 0 && rawTopLo <= chartHeight;
             lblLo.style.display = visibleLo ? 'block' : 'none';
             if (visibleLo) {
@@ -942,13 +953,5 @@ function redrawBoxMarks() {
             return;
         const ts = chartState.chart.timeScale();
         renderBoxMarks(d.zones, d.cycleLowIdx, d.cycleData, ts, series, d.coinId, d.symbol, d.cycleNumber, d.cycleRef);
-
-        if (chartState.showSubBox && d.cycleRef) {
-            const subBoxes = Array.isArray(d.cycleRef.sub_boxes) ? d.cycleRef.sub_boxes : [];
-            const candidates = Array.isArray(d.cycleRef.sub_box_candidates) ? d.cycleRef.sub_box_candidates : [];
-            if (subBoxes.length > 0 || candidates.length > 0) {
-                renderSubBoxMarks(subBoxes, candidates, ts, series, d.coinId, d.symbol, d.cycleNumber);
-            }
-        }
     });
 }

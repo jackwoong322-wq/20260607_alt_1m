@@ -1,19 +1,30 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Oxanium:wght@500;600;700&display=swap');
 
 :root {
-  --bg: #070c14;
-  --panel: #0d1420;
+  /* DESIGN.md Tokens */
+  --bg-main: #0b0e14;
+  --bg-surface: #151922;
+  --border-subtle: #232936;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --color-bull: #0ecb81;
+  --color-bear: #f6465d;
+  --color-accent: #38bdf8;
+
+  /* Legacy Bridge */
+  --bg: var(--bg-main);
+  --panel: var(--bg-surface);
   --panel-2: #0f1929;
-  --border: #1e2d45;
+  --border: var(--border-subtle);
   --border-soft: #16273d;
-  --accent: #00d4ff;
-  --accent-soft: rgba(0, 212, 255, 0.12);
-  --accent-strong: rgba(0, 212, 255, 0.22);
-  --text: #c8d8f0;
-  --text-dim: #4a6080;
+  --accent: var(--color-accent);
+  --accent-soft: rgba(56, 189, 248, 0.12);
+  --accent-strong: rgba(56, 189, 248, 0.22);
+  --text: var(--text-primary);
+  --text-dim: var(--text-secondary);
   --text-muted: #7590b4;
-  --green: #1bf0a2;
-  --red: #ff5f86;
+  --green: var(--color-bull);
+  --red: var(--color-bear);
   --amber: #ffbf49;
   --space-1: 4px;
   --space-2: 8px;
@@ -22,9 +33,9 @@
   --space-5: 24px;
   --space-6: 32px;
   --space-7: 48px;
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
   --shadow-1: 0 20px 60px rgba(0, 0, 0, 0.28);
 }
 
@@ -40,9 +51,9 @@ body {
   flex-direction: column;
   background: var(--bg);
   color: var(--text);
-  font-family: 'JetBrains Mono', 'Manrope', sans-serif;
-  font-size: 16px;
-  line-height: 1.45;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 'JetBrains Mono', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
   overflow: hidden;
   font-kerning: normal;
 }
@@ -52,7 +63,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  padding: 14px 18px;
+  padding: 10px 16px;
   border-bottom: 1px solid var(--border);
   background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)), var(--panel);
 }
@@ -60,12 +71,12 @@ body {
 .header-title {
   display: flex;
   align-items: baseline;
-  gap: 10px;
-  color: #f6fbff;
-  font-family: 'Oxanium', sans-serif;
-  font-size: 1.68rem;
+  gap: 8px;
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 1.15rem;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.05em;
 }
 
 .header-title span {
@@ -74,17 +85,17 @@ body {
 
 .header-subtitle {
   color: var(--text-dim) !important;
-  font-family: 'JetBrains Mono', sans-serif;
-  font-size: 0.84rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
   font-weight: 600;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.1em;
 }
 
 .header-info {
   color: var(--text-dim);
-  font-size: 0.66rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
@@ -96,8 +107,8 @@ body {
 }
 
 .sidebar {
-  width: 282px;
-  min-width: 282px;
+  width: 260px;
+  min-width: 260px;
   background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0)), var(--panel);
   border-right: 1px solid var(--border);
   display: flex;
@@ -106,26 +117,26 @@ body {
 }
 
 .sidebar-header {
-  padding: 14px 14px 11px;
+  padding: 10px 14px 8px;
   border-bottom: 1px solid var(--border);
   color: var(--text-dim);
   font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.26em;
+  letter-spacing: 0.15em;
 }
 
 .search-box {
-  padding: 10px 10px;
+  padding: 8px 10px;
   border-bottom: 1px solid var(--border);
 }
 
 .search-box input {
   width: 100%;
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: 6px;
   background: rgba(6, 12, 21, 0.92);
   color: var(--text);
-  padding: 9px 11px;
+  padding: 6px 10px;
   font-size: 0.82rem;
   font: inherit;
   letter-spacing: 0.02em;
@@ -162,10 +173,10 @@ body {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  margin: 0 0;
-  padding: 10px 10px;
+  margin: 1px 0;
+  padding: 6px 10px;
   border: 1px solid transparent;
-  border-radius: 0;
+  border-radius: 6px;
   cursor: pointer;
   transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
 }
@@ -184,8 +195,8 @@ body {
 .coin-check {
   width: 16px;
   height: 16px;
-  border: 1px solid var(--border);
-  border-radius: 5px;
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -208,9 +219,9 @@ body {
 }
 
 .coin-rank {
-  width: 28px;
+  width: 32px;
   color: var(--text-dim);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
   text-align: right;
   flex-shrink: 0;
@@ -219,15 +230,15 @@ body {
 .coin-symbol {
   flex: 1;
   color: #f7fbff;
-  font-size: 0.98rem;
-  font-weight: 800;
+  font-size: 0.88rem;
+  font-weight: 700;
   letter-spacing: 0.02em;
 }
 
 .coin-name {
-  max-width: 88px;
+  max-width: 120px;
   color: var(--text-muted);
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -252,9 +263,9 @@ body {
 
 .toolbar-label {
   color: var(--text-dim);
-  font-size: 0.66rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
 }
 
@@ -270,16 +281,65 @@ body {
   margin-left: auto;
 }
 
+.dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 0;
+  min-width: 160px;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.dropdown-menu.show {
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dropdown-item input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
 .cycle-btn {
-  border: 1px solid #334b6a;
+  border: 1.5px solid #334b6a;
   border-radius: 999px;
   background: transparent;
   color: #5e7899;
-  padding: 6px 12px;
+  padding: 5px 12px;
   font-family: 'JetBrains Mono', sans-serif;
-  font-size: 0.66rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.18s ease;
@@ -311,7 +371,7 @@ body {
   position: absolute;
   transform: translateX(-50%);
   color: #00d4ff;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0;
@@ -328,14 +388,14 @@ body {
 .chart-area {
   position: relative;
   flex: 1;
-  min-height: clamp(200px, 36vh, 340px);
+  min-height: 420px;
   overflow: hidden;
 }
 
 #chart {
   width: 100%;
   height: 100%;
-  min-height: clamp(200px, 36vh, 340px);
+  min-height: 420px;
 }
 
 .overlay-layer {
@@ -390,12 +450,12 @@ body {
 
 .legend-info {
   color: var(--text-dim);
-  font-size: 0.68rem;
+  font-size: 0.85rem;
 }
 
 .legend-current {
   color: #ffbf49;
-  font-size: 0.62rem;
+  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.08em;
 }
@@ -410,20 +470,20 @@ body {
 .stat-item {
   flex-shrink: 0;
   border-right: 1px solid var(--border-soft);
-  padding: 7px 12px;
+  padding: 6px 14px;
 }
 
 .stat-label {
-  margin-bottom: 3px;
+  margin-bottom: 2px;
   color: var(--text-dim);
-  font-size: 0.62rem;
-  letter-spacing: 0.18em;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .stat-value {
   color: #fff;
-  font-size: 0.86rem;
+  font-size: 0.88rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
@@ -447,20 +507,20 @@ body {
 }
 
 .empty-state p {
-  font-size: 0.95rem;
-  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
 }
 
 .bb-label {
   position: absolute;
-  padding: 4px 8px;
+  padding: 2px 6px;
   border-radius: 999px;
   pointer-events: none;
   opacity: 0.85;
-  font-family: 'Oxanium', sans-serif;
-  font-size: 0.78rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.05em;
 }
 
 .bb-bear {
@@ -484,9 +544,12 @@ body {
 }
 
 .bz-dot {
+  position: absolute;
   width: 7px;
   height: 7px;
   border-radius: 50%;
+  pointer-events: none;
+  z-index: 20;
   border: 1.5px solid;
 }
 
@@ -497,13 +560,16 @@ body {
 
 .bz-label {
   position: absolute;
-  pointer-events: none;
+  pointer-events: all;
+  cursor: pointer;
   z-index: 21;
   white-space: nowrap;
-  opacity: 0.86;
-  font-family: 'Manrope', sans-serif;
-  font-size: 0.72rem;
+  opacity: 0.95;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 11px;
   font-weight: 700;
+  line-height: 1;
+  text-shadow: 0 1px 2px #080c14, 0 0 4px rgba(0, 0, 0, 0.9);
 }
 
 .bz-label.bear { color: #ff7f9f; }
@@ -525,12 +591,12 @@ body {
 .forecast-guide-label {
   position: absolute;
   transform: translateX(-50%);
-  padding: 2px 6px;
+  padding: 1px 4px;
   border-radius: 3px;
-  font-family: 'Manrope', sans-serif;
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 1px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
   pointer-events: none;
   z-index: 24;
   color: #c6d6f2;
@@ -548,18 +614,18 @@ body {
   z-index: 20;
   pointer-events: none;
   white-space: nowrap;
-  font-size: 0.76rem;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 600;
   opacity: 0.48;
 }
 
 .cycle-low-mark {
   position: absolute;
-  width: 14px;
-  height: 14px;
+  width: 10px;
+  height: 10px;
   transform: translate(-50%, -50%) rotate(45deg);
   background: rgba(31, 215, 255, 0.24);
-  border: 2px solid var(--accent);
+  border: 1.5px solid var(--accent);
   pointer-events: all;
   cursor: pointer;
   z-index: 25;
@@ -571,9 +637,9 @@ body {
   pointer-events: none;
   white-space: nowrap;
   color: var(--accent);
-  font-family: 'Manrope', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 700;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
 }
 
 #crosshairTooltip {
@@ -596,7 +662,7 @@ body {
   margin-bottom: 4px;
   color: var(--accent);
   font-family: 'Oxanium', sans-serif;
-  font-size: 0.78rem;
+  font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.11em;
 }
@@ -619,7 +685,7 @@ body {
 #crosshairTooltip .bt-key,
 #crosshairTooltip .tt-date {
   color: var(--text-dim);
-  font-size: 0.68rem;
+  font-size: 0.85rem;
 }
 
 #crosshairTooltip .tt-label {
@@ -637,7 +703,7 @@ body {
   justify-content: space-between;
   gap: 12px;
   margin: 3px 0;
-  font-size: 0.68rem;
+  font-size: 0.85rem;
 }
 
 #crosshairTooltip .bt-up { color: var(--green); }

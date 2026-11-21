@@ -111,8 +111,8 @@ export default function LegacyAnalyzerApp() {
       <div style={styles.statusWrap}>
         <div style={styles.statusCard}>
           <div style={styles.statusEyebrow}>DATA CONNECTION</div>
-          <div style={{ ...styles.statusTitle, color: '#ff92aa' }}>Unable to load the analyzer</div>
-          <div style={{ ...styles.statusText, color: '#ffcad5' }}>{error}</div>
+          <div style={{ ...styles.statusTitle, color: '#f6465d' }}>Unable to load the analyzer</div>
+          <div style={{ ...styles.statusText, color: '#94a3b8' }}>{error}</div>
         </div>
       </div>
     )
@@ -133,42 +133,42 @@ const styles: Record<string, CSSProperties> = {
     height: '100vh',
     border: 'none',
     display: 'block',
-    background: '#080c14',
+    background: '#0b0e14',
   },
   statusWrap: {
     minHeight: '100vh',
     display: 'grid',
     placeItems: 'center',
-    background: '#080c14',
-    color: '#c8d8f0',
-    fontFamily: '"JetBrains Mono", monospace',
+    background: '#0b0e14',
+    color: '#f1f5f9',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "JetBrains Mono", monospace',
   },
   statusCard: {
-    width: 'min(460px, calc(100vw - 40px))',
-    border: '1px solid #20344f',
-    background: 'linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)), #0d1725',
-    padding: '26px 28px',
-    borderRadius: 16,
-    boxShadow: '0 24px 64px rgba(0, 0, 0, 0.32)',
+    width: 'min(440px, calc(100vw - 40px))',
+    border: '1px solid #232936',
+    background: '#151922',
+    padding: '20px 24px',
+    borderRadius: 8,
+    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.28)',
   },
   statusEyebrow: {
-    marginBottom: 10,
-    color: '#6882a7',
-    fontSize: '0.76rem',
+    marginBottom: 8,
+    color: '#94a3b8',
+    fontSize: '0.72rem',
     fontWeight: 700,
-    letterSpacing: '0.24em',
+    letterSpacing: '0.15em',
   },
   statusTitle: {
-    color: '#f6fbff',
-    fontFamily: '"Oxanium", sans-serif',
-    fontSize: '1.5rem',
+    color: '#f1f5f9',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    fontSize: '1.15rem',
     fontWeight: 700,
-    letterSpacing: '0.06em',
+    letterSpacing: '0.04em',
   },
   statusText: {
-    marginTop: 10,
-    color: '#9cb2ce',
-    fontSize: '0.98rem',
-    lineHeight: 1.6,
+    marginTop: 8,
+    color: '#94a3b8',
+    fontSize: '0.84rem',
+    lineHeight: 1.5,
   },
 }
