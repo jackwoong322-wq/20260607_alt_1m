@@ -221,7 +221,14 @@ export async function ensureCycleLoaded(
       }
 
       if (!payload) {
-        const fetchFn = (window as any).__fetchCycleData_frontend || (window.parent as any)?.__fetchCycleData_frontend;
+        let fetchFn = (window as any).__fetchCycleData_frontend;
+        if (!fetchFn) {
+          try {
+            fetchFn = (window.parent as any)?.__fetchCycleData_frontend;
+          } catch (_) {
+            // cross-origin frame access guard
+          }
+        }
         if (typeof fetchFn === 'function') {
           payload = await fetchFn(coinId, cycleNumber);
         }

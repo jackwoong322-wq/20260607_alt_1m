@@ -178,7 +178,14 @@ export async function ensureCycleLoaded(coinId, cycleNumber, allowSnapshotReload
                 console.warn('Direct cycle API fetch failed, trying frontend provider', err);
             }
             if (!payload) {
-                const fetchFn = window.__fetchCycleData_frontend || window.parent?.__fetchCycleData_frontend;
+                let fetchFn = window.__fetchCycleData_frontend;
+                if (!fetchFn) {
+                    try {
+                        fetchFn = window.parent?.__fetchCycleData_frontend;
+                    } catch (_) {
+                        // cross-origin frame access guard
+                    }
+                }
                 if (typeof fetchFn === 'function') {
                     payload = await fetchFn(coinId, cycleNumber);
                 }

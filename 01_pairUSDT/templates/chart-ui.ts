@@ -189,40 +189,90 @@ export function buildCycleToggles(): void {
 
 (window as any).buildCycleToggles = buildCycleToggles;
 
-function toggleHighLow() {
-  chartState.showHighLow = !chartState.showHighLow;
-  const btn = document.getElementById('toggleRange') as HTMLButtonElement | null;
-  if (btn) {
-    btn.style.cssText = chartState.showHighLow
+export function toggleShowDropdown(): void {
+  const menu = document.getElementById('showDropdownMenu');
+  if (menu) {
+    menu.classList.toggle('show');
+  }
+}
+
+function syncCheckboxStates(): void {
+  const chkRange = document.getElementById('chkRange') as HTMLInputElement | null;
+  if (chkRange) chkRange.checked = Boolean(chartState.showHighLow);
+
+  const chkBox = document.getElementById('chkBox') as HTMLInputElement | null;
+  if (chkBox) chkBox.checked = Boolean(chartState.showBoxZone);
+
+  const chkBearBull = document.getElementById('chkBearBull') as HTMLInputElement | null;
+  if (chkBearBull) chkBearBull.checked = Boolean(chartState.showPrediction);
+
+  const chkExtended = document.getElementById('chkExtendedForecast') as HTMLInputElement | null;
+  if (chkExtended) {
+    chkExtended.checked = Boolean(chartState.showExtendedForecast);
+    chkExtended.disabled = !chartState.showPrediction;
+  }
+
+  const chkSubBox = document.getElementById('chkSubBox') as HTMLInputElement | null;
+  if (chkSubBox) chkSubBox.checked = Boolean(chartState.showSubBox);
+
+  const chkBB = document.getElementById('chkBB') as HTMLInputElement | null;
+  if (chkBB) chkBB.checked = Boolean(chartState.showBB);
+
+  // 하위 호환: 기존 버튼 스타일도 있으면 동기화
+  const rangeBtn = document.getElementById('toggleRange');
+  if (rangeBtn) {
+    rangeBtn.style.cssText = chartState.showHighLow
       ? 'border-color:#00d4ff;color:#00d4ff;background:rgba(0,212,255,0.1)'
       : 'border-color:#4a6080;color:#4a6080;';
   }
+  const boxBtn = document.getElementById('toggleBox');
+  if (boxBtn) {
+    boxBtn.style.cssText = chartState.showBoxZone
+      ? 'border-color:#FFB800;color:#FFB800;background:rgba(255,184,0,0.1)'
+      : 'border-color:#4a6080;color:#4a6080;';
+  }
+  const predBtn = document.getElementById('toggleBearBull');
+  if (predBtn) {
+    predBtn.style.cssText = chartState.showPrediction
+      ? 'border-color:#ff6bb5;color:#ff6bb5;background:rgba(255,107,181,0.1)'
+      : 'border-color:#4a6080;color:#4a6080;';
+  }
+  const subBoxBtn = document.getElementById('toggleSubBox');
+  if (subBoxBtn) {
+    subBoxBtn.style.cssText = chartState.showSubBox
+      ? 'border-color:#00d4ff;color:#00d4ff;background:rgba(0,212,255,0.10)'
+      : 'border-color:#4a6080;color:#4a6080;';
+  }
+  const bbBtn = document.getElementById('toggleBB');
+  if (bbBtn) {
+    bbBtn.style.cssText = chartState.showBB
+      ? 'border-color:#a78bfa;color:#d8ccff;background:rgba(167,139,250,0.12)'
+      : 'border-color:#4a6080;color:#4a6080;';
+  }
+  updateExtendedForecastButton();
+}
+
+function toggleHighLow() {
+  const chk = document.getElementById('chkRange') as HTMLInputElement | null;
+  chartState.showHighLow = chk ? chk.checked : !chartState.showHighLow;
+  syncCheckboxStates();
   drawChart();
 }
 
 function toggleBoxZone() {
-  chartState.showBoxZone = !chartState.showBoxZone;
-  const btn = document.getElementById('toggleBox') as HTMLButtonElement | null;
-  if (btn) {
-    btn.style.cssText = chartState.showBoxZone
-      ? 'border-color:#FFB800;color:#FFB800;background:rgba(255,184,0,0.1)'
-      : 'border-color:#4a6080;color:#4a6080;';
-  }
+  const chk = document.getElementById('chkBox') as HTMLInputElement | null;
+  chartState.showBoxZone = chk ? chk.checked : !chartState.showBoxZone;
+  syncCheckboxStates();
   drawChart();
 }
 
 function toggleBearBull() {
-  chartState.showPrediction = !chartState.showPrediction;
+  const chk = document.getElementById('chkBearBull') as HTMLInputElement | null;
+  chartState.showPrediction = chk ? chk.checked : !chartState.showPrediction;
   if (!chartState.showPrediction) {
     chartState.showExtendedForecast = false;
   }
-  const btn = document.getElementById('toggleBearBull') as HTMLButtonElement | null;
-  if (btn) {
-    btn.style.cssText = chartState.showPrediction
-      ? 'border-color:#ff6bb5;color:#ff6bb5;background:rgba(255,107,181,0.1)'
-      : 'border-color:#4a6080;color:#4a6080;';
-  }
-  updateExtendedForecastButton();
+  syncCheckboxStates();
   drawChart();
 }
 
@@ -240,30 +290,23 @@ function updateExtendedForecastButton(): void {
 
 function toggleExtendedForecast() {
   if (!chartState.showPrediction) return;
-  chartState.showExtendedForecast = !chartState.showExtendedForecast;
-  updateExtendedForecastButton();
+  const chk = document.getElementById('chkExtendedForecast') as HTMLInputElement | null;
+  chartState.showExtendedForecast = chk ? chk.checked : !chartState.showExtendedForecast;
+  syncCheckboxStates();
   drawChart();
 }
 
 function toggleSubBox() {
-  chartState.showSubBox = !chartState.showSubBox;
-  const btn = document.getElementById('toggleSubBox') as HTMLButtonElement | null;
-  if (btn) {
-    btn.style.cssText = chartState.showSubBox
-      ? 'border-color:#00d4ff;color:#00d4ff;background:rgba(0,212,255,0.10)'
-      : 'border-color:#4a6080;color:#4a6080;';
-  }
+  const chk = document.getElementById('chkSubBox') as HTMLInputElement | null;
+  chartState.showSubBox = chk ? chk.checked : !chartState.showSubBox;
+  syncCheckboxStates();
   drawChart();
 }
 
 function toggleBB() {
-  chartState.showBB = !chartState.showBB;
-  const btn = document.getElementById('toggleBB') as HTMLButtonElement | null;
-  if (btn) {
-    btn.style.cssText = chartState.showBB
-      ? 'border-color:#a78bfa;color:#d8ccff;background:rgba(167,139,250,0.12)'
-      : 'border-color:#4a6080;color:#4a6080;';
-  }
+  const chk = document.getElementById('chkBB') as HTMLInputElement | null;
+  chartState.showBB = chk ? chk.checked : !chartState.showBB;
+  syncCheckboxStates();
   drawChart();
 }
 
@@ -292,32 +335,8 @@ export function initDefaults() {
     chartState.activeCycles = new Set([maxCycle]);
   }
   }
-  // BOX ZONE 기본 활성화 버튼 스타일 동기화
-  const boxBtn = document.getElementById('toggleBox') as HTMLButtonElement | null;
-  if (boxBtn) {
-    boxBtn.style.cssText = chartState.showBoxZone
-      ? 'border-color:#FFB800;color:#FFB800;background:rgba(255,184,0,0.1)'
-      : 'border-color:#4a6080;color:#4a6080;';
-  }
-  const predictionBtn = document.getElementById('toggleBearBull') as HTMLButtonElement | null;
-  if (predictionBtn) {
-    predictionBtn.style.cssText = chartState.showPrediction
-      ? 'border-color:#ff6bb5;color:#ff6bb5;background:rgba(255,107,181,0.1)'
-      : 'border-color:#4a6080;color:#4a6080;';
-  }
-  updateExtendedForecastButton();
-  const subBoxBtn = document.getElementById('toggleSubBox') as HTMLButtonElement | null;
-  if (subBoxBtn) {
-    subBoxBtn.style.cssText = chartState.showSubBox
-      ? 'border-color:#00d4ff;color:#00d4ff;background:rgba(0,212,255,0.10)'
-      : 'border-color:#4a6080;color:#4a6080;';
-  }
-  const bbBtn = document.getElementById('toggleBB') as HTMLButtonElement | null;
-  if (bbBtn) {
-    bbBtn.style.cssText = chartState.showBB
-      ? 'border-color:#a78bfa;color:#d8ccff;background:rgba(167,139,250,0.12)'
-      : 'border-color:#4a6080;color:#4a6080;';
-  }
+  // Checkbox 및 버튼 UI 상태 동기화
+  syncCheckboxStates();
 }
 
 // ── Wire DOM events & expose toggles for onclick ───────
@@ -328,6 +347,22 @@ if (searchInput) {
     buildCoinList(target?.value ?? '');
   });
 }
+
+// Close dropdown on outside click
+if (typeof window !== 'undefined') {
+  window.addEventListener('click', (e: MouseEvent) => {
+    const container = document.getElementById('showDropdownContainer');
+    if (container && !container.contains(e.target as Node)) {
+      const menu = document.getElementById('showDropdownMenu');
+      if (menu && menu.classList.contains('show')) {
+        menu.classList.remove('show');
+      }
+    }
+  });
+}
+
+(window as any).toggleShowDropdown = toggleShowDropdown;
+(window as any).syncCheckboxStates = syncCheckboxStates;
 (window as any).toggleHighLow = toggleHighLow;
 (window as any).toggleBoxZone = toggleBoxZone;
 (window as any).toggleBearBull = toggleBearBull;

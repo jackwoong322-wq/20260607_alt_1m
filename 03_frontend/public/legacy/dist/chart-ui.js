@@ -170,38 +170,88 @@ export function buildCycleToggles() {
     });
 }
 window.buildCycleToggles = buildCycleToggles;
-function toggleHighLow() {
-    chartState.showHighLow = !chartState.showHighLow;
-    const btn = document.getElementById('toggleRange');
-    if (btn) {
-        btn.style.cssText = chartState.showHighLow
+
+export function toggleShowDropdown() {
+    const menu = document.getElementById('showDropdownMenu');
+    if (menu) {
+        menu.classList.toggle('show');
+    }
+}
+
+function syncCheckboxStates() {
+    const chkRange = document.getElementById('chkRange');
+    if (chkRange) chkRange.checked = Boolean(chartState.showHighLow);
+
+    const chkBox = document.getElementById('chkBox');
+    if (chkBox) chkBox.checked = Boolean(chartState.showBoxZone);
+
+    const chkBearBull = document.getElementById('chkBearBull');
+    if (chkBearBull) chkBearBull.checked = Boolean(chartState.showPrediction);
+
+    const chkExtended = document.getElementById('chkExtendedForecast');
+    if (chkExtended) {
+        chkExtended.checked = Boolean(chartState.showExtendedForecast);
+        chkExtended.disabled = !chartState.showPrediction;
+    }
+
+    const chkSubBox = document.getElementById('chkSubBox');
+    if (chkSubBox) chkSubBox.checked = Boolean(chartState.showSubBox);
+
+    const chkBB = document.getElementById('chkBB');
+    if (chkBB) chkBB.checked = Boolean(chartState.showBB);
+
+    const rangeBtn = document.getElementById('toggleRange');
+    if (rangeBtn) {
+        rangeBtn.style.cssText = chartState.showHighLow
             ? 'border-color:#00d4ff;color:#00d4ff;background:rgba(0,212,255,0.1)'
             : 'border-color:#4a6080;color:#4a6080;';
     }
-    drawChart();
-}
-function toggleBoxZone() {
-    chartState.showBoxZone = !chartState.showBoxZone;
-    const btn = document.getElementById('toggleBox');
-    if (btn) {
-        btn.style.cssText = chartState.showBoxZone
+    const boxBtn = document.getElementById('toggleBox');
+    if (boxBtn) {
+        boxBtn.style.cssText = chartState.showBoxZone
             ? 'border-color:#FFB800;color:#FFB800;background:rgba(255,184,0,0.1)'
             : 'border-color:#4a6080;color:#4a6080;';
     }
-    drawChart();
-}
-function toggleBearBull() {
-    chartState.showPrediction = !chartState.showPrediction;
-    if (!chartState.showPrediction) {
-        chartState.showExtendedForecast = false;
-    }
-    const btn = document.getElementById('toggleBearBull');
-    if (btn) {
-        btn.style.cssText = chartState.showPrediction
+    const predBtn = document.getElementById('toggleBearBull');
+    if (predBtn) {
+        predBtn.style.cssText = chartState.showPrediction
             ? 'border-color:#ff6bb5;color:#ff6bb5;background:rgba(255,107,181,0.1)'
             : 'border-color:#4a6080;color:#4a6080;';
     }
+    const subBoxBtn = document.getElementById('toggleSubBox');
+    if (subBoxBtn) {
+        subBoxBtn.style.cssText = chartState.showSubBox
+            ? 'border-color:#00d4ff;color:#00d4ff;background:rgba(0,212,255,0.10)'
+            : 'border-color:#4a6080;color:#4a6080;';
+    }
+    const bbBtn = document.getElementById('toggleBB');
+    if (bbBtn) {
+        bbBtn.style.cssText = chartState.showBB
+            ? 'border-color:#a78bfa;color:#d8ccff;background:rgba(167,139,250,0.12)'
+            : 'border-color:#4a6080;color:#4a6080;';
+    }
     updateExtendedForecastButton();
+}
+
+function toggleHighLow() {
+    const chk = document.getElementById('chkRange');
+    chartState.showHighLow = chk ? chk.checked : !chartState.showHighLow;
+    syncCheckboxStates();
+    drawChart();
+}
+function toggleBoxZone() {
+    const chk = document.getElementById('chkBox');
+    chartState.showBoxZone = chk ? chk.checked : !chartState.showBoxZone;
+    syncCheckboxStates();
+    drawChart();
+}
+function toggleBearBull() {
+    const chk = document.getElementById('chkBearBull');
+    chartState.showPrediction = chk ? chk.checked : !chartState.showPrediction;
+    if (!chartState.showPrediction) {
+        chartState.showExtendedForecast = false;
+    }
+    syncCheckboxStates();
     drawChart();
 }
 function updateExtendedForecastButton() {
@@ -219,28 +269,21 @@ function updateExtendedForecastButton() {
 function toggleExtendedForecast() {
     if (!chartState.showPrediction)
         return;
-    chartState.showExtendedForecast = !chartState.showExtendedForecast;
-    updateExtendedForecastButton();
+    const chk = document.getElementById('chkExtendedForecast');
+    chartState.showExtendedForecast = chk ? chk.checked : !chartState.showExtendedForecast;
+    syncCheckboxStates();
     drawChart();
 }
 function toggleSubBox() {
-    chartState.showSubBox = !chartState.showSubBox;
-    const btn = document.getElementById('toggleSubBox');
-    if (btn) {
-        btn.style.cssText = chartState.showSubBox
-            ? 'border-color:#00d4ff;color:#00d4ff;background:rgba(0,212,255,0.10)'
-            : 'border-color:#4a6080;color:#4a6080;';
-    }
+    const chk = document.getElementById('chkSubBox');
+    chartState.showSubBox = chk ? chk.checked : !chartState.showSubBox;
+    syncCheckboxStates();
     drawChart();
 }
 function toggleBB() {
-    chartState.showBB = !chartState.showBB;
-    const btn = document.getElementById('toggleBB');
-    if (btn) {
-        btn.style.cssText = chartState.showBB
-            ? 'border-color:#a78bfa;color:#d8ccff;background:rgba(167,139,250,0.12)'
-            : 'border-color:#4a6080;color:#4a6080;';
-    }
+    const chk = document.getElementById('chkBB');
+    chartState.showBB = chk ? chk.checked : !chartState.showBB;
+    syncCheckboxStates();
     drawChart();
 }
 // ── Defaults & Bottom Override UI ─────────────────────
@@ -265,33 +308,9 @@ export function initDefaults() {
             chartState.activeCycles = new Set([maxCycle]);
         }
     }
-    // BOX ZONE 기본 활성화 버튼 스타일 동기화
-    const boxBtn = document.getElementById('toggleBox');
-    if (boxBtn) {
-        boxBtn.style.cssText = chartState.showBoxZone
-            ? 'border-color:#FFB800;color:#FFB800;background:rgba(255,184,0,0.1)'
-            : 'border-color:#4a6080;color:#4a6080;';
-    }
-    const predictionBtn = document.getElementById('toggleBearBull');
-    if (predictionBtn) {
-        predictionBtn.style.cssText = chartState.showPrediction
-            ? 'border-color:#ff6bb5;color:#ff6bb5;background:rgba(255,107,181,0.1)'
-            : 'border-color:#4a6080;color:#4a6080;';
-    }
-    updateExtendedForecastButton();
-    const subBoxBtn = document.getElementById('toggleSubBox');
-    if (subBoxBtn) {
-        subBoxBtn.style.cssText = chartState.showSubBox
-            ? 'border-color:#00d4ff;color:#00d4ff;background:rgba(0,212,255,0.10)'
-            : 'border-color:#4a6080;color:#4a6080;';
-    }
-    const bbBtn = document.getElementById('toggleBB');
-    if (bbBtn) {
-        bbBtn.style.cssText = chartState.showBB
-            ? 'border-color:#a78bfa;color:#d8ccff;background:rgba(167,139,250,0.12)'
-            : 'border-color:#4a6080;color:#4a6080;';
-    }
+    syncCheckboxStates();
 }
+
 // ── Wire DOM events & expose toggles for onclick ───────
 const searchInput = document.getElementById('searchInput');
 if (searchInput) {
@@ -300,6 +319,21 @@ if (searchInput) {
         buildCoinList(target?.value ?? '');
     });
 }
+
+if (typeof window !== 'undefined') {
+    window.addEventListener('click', (e) => {
+        const container = document.getElementById('showDropdownContainer');
+        if (container && !container.contains(e.target)) {
+            const menu = document.getElementById('showDropdownMenu');
+            if (menu && menu.classList.contains('show')) {
+                menu.classList.remove('show');
+            }
+        }
+    });
+}
+
+window.toggleShowDropdown = toggleShowDropdown;
+window.syncCheckboxStates = syncCheckboxStates;
 window.toggleHighLow = toggleHighLow;
 window.toggleBoxZone = toggleBoxZone;
 window.toggleBearBull = toggleBearBull;

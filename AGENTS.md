@@ -86,6 +86,17 @@ Applies to `01_pairUSDT/`.
 
 ---
 
+## Source Modification & QA Routine (필수 수정 루틴)
+
+소스 코드 수정 시 반드시 다음 루틴을 순차적으로 수행한다:
+1. **유닛 테스트 작성/보강**: 변경 사항 및 에지 케이스를 검증하는 단위 테스트를 반드시 추가/체크
+2. **테스트 실행 및 검증**: 관련 단위 테스트 및 빌드를 실행하여 100% 통과 확인
+3. **자체 코드 리뷰**: 예외 처리, 보안(Cross-origin 등), 쿼리 페이징(1,000건 제한 방지), 에지 케이스 자체 리뷰 및 선제 수정
+4. **사용자 판단 필요 시 질문**: 정책적 결정이나 사용자 확인이 필요한 사항은 임의 판단하지 않고 즉시 질문
+5. **하네스 문서 동기화**: 수정 내용과 규칙을 하네스(`AGENTS.md`, `workflow_rules.md`)에 상시 기록
+
+---
+
 ## General Coding Rules
 
 - Never hardcode API keys, URLs, or secrets.
@@ -94,6 +105,7 @@ Applies to `01_pairUSDT/`.
 - Handle errors explicitly with `try/catch` or `try/except`.
 - Add comments only for non-obvious logic.
 - 단위 테스트(QA) 환경이 없다면 작업을 시작하기 전에 반드시 사용자에게 테스트 환경 구축 여부를 먼저 묻고 대기할 것. 명시적으로 "테스트 생략"이라는 지시가 없는 한 임의로 테스트 단계를 건너뛰는 것을 엄격히 금지함.
+- GitHub 커밋 및 푸시(`git commit`, `git push`)는 반드시 사전에 사용자에게 명시적 허락을 구한 뒤 진행할 것.
 
 ---
 
