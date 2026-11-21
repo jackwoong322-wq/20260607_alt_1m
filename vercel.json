@@ -3,5 +3,11 @@
   "framework": "vite",
   "installCommand": "cd 03_frontend && npm install",
   "buildCommand": "cd 03_frontend && npm run build",
-  "outputDirectory": "03_frontend/dist"
+  "outputDirectory": "03_frontend/dist",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://two0260317-alt.onrender.com/api/:path*"
+    }
+  ]
 }

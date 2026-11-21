@@ -469,13 +469,13 @@ export async function fetchCycleData(coinId: string, cycleNumber: number) {
     }
 
     const [cycleRows, boxRows, pathRows, peakRows] = await Promise.all([
-        supabase.from('alt_cycle_data').select('*').eq('coin_id', coinId).eq('cycle_number', cycleNumber).order('days_since_peak'),
-        supabase.from('coin_analysis_results').select('*').eq('coin_id', coinId).eq('cycle_number', cycleNumber).order('box_index'),
-        supabase.from('coin_prediction_paths').select('*').eq('coin_id', coinId).eq('cycle_number', cycleNumber).order('scenario').order('day_x'),
-        supabase.from('coin_prediction_peaks').select('*').eq('coin_id', coinId).eq('cycle_number', cycleNumber)
+        fetchAllRows(supabase.from('alt_cycle_data').select('*').eq('coin_id', coinId).eq('cycle_number', cycleNumber).order('days_since_peak')),
+        fetchAllRows(supabase.from('coin_analysis_results').select('*').eq('coin_id', coinId).eq('cycle_number', cycleNumber).order('box_index')),
+        fetchAllRows(supabase.from('coin_prediction_paths').select('*').eq('coin_id', coinId).eq('cycle_number', cycleNumber).order('scenario').order('day_x')),
+        fetchAllRows(supabase.from('coin_prediction_peaks').select('*').eq('coin_id', coinId).eq('cycle_number', cycleNumber))
     ]);
 
-    const data = (cycleRows.data || []).map((row: any) => ({
+    const data = (cycleRows || []).map((row: any) => ({
         x: Number(row.days_since_peak || 0),
         close: Number(Number(row.close_rate || 0).toFixed(4)),
         high: Number(Number(row.high_rate || 0).toFixed(4)),
@@ -483,7 +483,7 @@ export async function fetchCycleData(coinId: string, cycleNumber: number) {
         date: String(row.timestamp || "").substring(0, 10)
     }));
 
-    let rawZones = (boxRows.data || []).map((row: any) => ({
+    let rawZones = (boxRows || []).map((row: any) => ({
         boxIndex: Number(row.box_index || 0),
         startX: row.start_x,
         endX: row.end_x,
@@ -503,13 +503,13 @@ export async function fetchCycleData(coinId: string, cycleNumber: number) {
 
     const cycleZones = applyActiveBoxDisplayFromFirstPred(rawZones);
 
-    const paths = pathRows.data || [];
+    const paths = pathRows || [];
     const predictionPaths = {
-        bull: paths.filter(p => String(p.scenario).toLowerCase() === 'bull').map(p => ({ x: p.day_x, value: p.value })),
-        bear: paths.filter(p => String(p.scenario).toLowerCase() === 'bear').map(p => ({ x: p.day_x, value: p.value }))
+        bull: paths.filter((p: any) => String(p.scenario).toLowerCase() === 'bull').map((p: any) => ({ x: p.day_x, value: p.value })),
+        bear: paths.filter((p: any) => String(p.scenario).toLowerCase() === 'bear').map((p: any) => ({ x: p.day_x, value: p.value }))
     };
 
-    const peakPredictions = (peakRows.data || []).map((row: any) => ({
+    const peakPredictions = (peakRows || []).map((row: any) => ({
         type: row.peak_type,
         value: row.predicted_value,
         day_x: row.predicted_day
@@ -517,9 +517,9 @@ export async function fetchCycleData(coinId: string, cycleNumber: number) {
 
     const [subBoxes, subBoxCandidates] = buildSubBoxPayload(data, cycleZones);
 
-    const cycleName = cycleRows.data?.[0]?.cycle_name || `Cycle ${cycleNumber}`;
-    const peakDate = cycleRows.data?.[0]?.peak_date || "";
-    const peakPrice = cycleRows.data?.[0]?.peak_price || null;
+    const cycleName = cycleRows?.[0]?.cycle_name || `Cycle ${cycleNumber}`;
+    const peakDate = cycleRows?.[0]?.peak_date || "";
+    const peakPrice = cycleRows?.[0]?.peak_price || null;
 
     return {
         data_version: "frontend-v1",

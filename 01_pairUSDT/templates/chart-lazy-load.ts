@@ -210,11 +210,26 @@ export async function ensureCycleLoaded(
         coin_id: coinId,
         cycle_number: String(cycleNumber),
       });
-      const response = await fetch(`${baseUrl}/api/dashboard-cycle-data?${params}`);
-      if (!response.ok) {
-        throw new Error(`${response.status} ${response.statusText}`);
+      let payload: any = null;
+      try {
+        const response = await fetch(`${baseUrl}/api/dashboard-cycle-data?${params}`);
+        if (response.ok) {
+          payload = await response.json();
+        }
+      } catch (err) {
+        console.warn('Direct cycle API fetch failed, trying frontend provider', err);
       }
-      const payload = await response.json();
+
+      if (!payload) {
+        const fetchFn = (window as any).__fetchCycleData_frontend || (window.parent as any)?.__fetchCycleData_frontend;
+        if (typeof fetchFn === 'function') {
+          payload = await fetchFn(coinId, cycleNumber);
+        }
+      }
+
+      if (!payload) {
+        throw new Error(`Failed to load cycle data: ${coinId} cycle ${cycleNumber}`);
+      }
       const currentVersion = getMeta()?.data_version;
       if (currentVersion && payload.data_version !== currentVersion) {
         await reloadInitialSnapshot();
