@@ -28,6 +28,7 @@ jobs:
         with:
           python-version: '3.11'
           cache: 'pip'
+          cache-dependency-path: 'requirements_action_predict.txt'
 
       - name: 패키지 설치
         run: pip install -r ../requirements_action_predict.txt
