@@ -1,0 +1,56 @@
+name: Crypto Pipeline Analyze (012, 021, 031)
+
+on:
+  schedule:
+    # 매일 20:00 UTC (한국 시간 05:00 KST) 실행
+    - cron: "0 20 * * *"
+  workflow_dispatch:
+    inputs:
+      run_mode:
+        description: "collect (012) | analyze (021+031) | all"
+        required: true
+        default: "all"
+
+env:
+  DB_MODE: supabase
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+  BINANCE_API_KEY: ${{ secrets.BINANCE_API_KEY }}
+  BINANCE_SECRET_KEY: ${{ secrets.BINANCE_SECRET_KEY }}
+
+jobs:
+  analyze-pipeline:
+    name: Run 012, 021, 031 pipeline
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 01_pairUSDT
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r ../requirements_action_analyze.txt
+
+      - name: Run 012 collector update
+        if: |
+          github.event_name == 'schedule' ||
+          github.event_name == 'workflow_dispatch' && (inputs.run_mode == 'collect' || inputs.run_mode == 'all')
+        run: python 012_cryptoCollectorUsdt_Update.py
+
+      - name: Run 021 cycle analysis
+        if: |
+          github.event_name == 'schedule' ||
+          github.event_name == 'workflow_dispatch' && (inputs.run_mode == 'analyze' || inputs.run_mode == 'all')
+        run: python 021_altCycleAnalysisUsdt.py
+
+      - name: Run 031 box analysis
+        if: |
+          github.event_name == 'schedule' ||
+          github.event_name == 'workflow_dispatch' && (inputs.run_mode == 'analyze' || inputs.run_mode == 'all')
+        run: python 031_box_analyzer_to_supabase.py
